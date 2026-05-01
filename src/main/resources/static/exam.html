@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Online Exam</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:40px;
+}
+
+.container{
+width:700px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:10px;
+}
+
+.question{
+margin-bottom:20px;
+}
+
+button{
+padding:10px 20px;
+background:green;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+#timer{
+font-size:20px;
+color:red;
+margin-bottom:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Online Examination</h2>
+
+<div id="timer"></div>
+
+<form id="examForm">
+
+<div id="questions"></div>
+
+<button type="submit">Submit Exam</button>
+
+</form>
+
+</div>
+
+<script>
+
+let questions = [];
+
+let time = 300;
+
+// TIMER
+setInterval(function(){
+
+time--;
+
+document.getElementById("timer").innerText = "Time Left: " + time + " seconds";
+
+if(time <= 0){
+submitExam();
+}
+
+},1000);
+
+
+// LOAD QUESTIONS FROM BACKEND
+fetch("http://localhost:8081/exam/questions")
+
+.then(res => res.json())
+
+.then(data => {
+
+questions = data;
+
+let html = "";
+
+data.forEach(q => {
+
+html += `
+
+<div class="question">
+
+<p>${q.questionText}</p>
+
+<label>
+<input type="radio" name="q${q.id}" value="${q.optionA}">
+${q.optionA}
+</label><br>
+
+<label>
+<input type="radio" name="q${q.id}" value="${q.optionB}">
+${q.optionB}
+</label><br>
+
+<label>
+<input type="radio" name="q${q.id}" value="${q.optionC}">
+${q.optionC}
+</label><br>
+
+<label>
+<input type="radio" name="q${q.id}" value="${q.optionD}">
+${q.optionD}
+</label>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("questions").innerHTML = html;
+
+});
+
+
+// SUBMIT FORM
+document.getElementById("examForm").addEventListener("submit", function(e){
+
+e.preventDefault();
+
+submitExam();
+
+});
+
+
+// COLLECT ANSWERS AND SEND TO BACKEND
+function submitExam(){
+
+let answers = [];
+
+questions.forEach(q => {
+
+let selected = document.querySelector(`input[name=q${q.id}]:checked`);
+
+if(selected){
+
+answers.push({
+
+questionId: q.id,
+selectedAnswer: selected.value
+
+});
+
+}
+
+});
+
+
+fetch("http://localhost:8081/exam/submit/" + localStorage.getItem("userId"),{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(answers)
+
+})
+
+.then(res => res.json())
+
+.then(result => {
+
+window.location.href = "thankyou.html";
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Online Exam Login</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+background:white;
+padding:30px;
+border-radius:8px;
+width:320px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+h2{
+text-align:center;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:10px 0;
+border:1px solid #ccc;
+border-radius:4px;
+}
+
+button{
+width:100%;
+padding:10px;
+background:#007BFF;
+color:white;
+border:none;
+border-radius:4px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+p{
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Login</h2>
+
+<input id="email" placeholder="Email">
+
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p>New User? <a href="register.html">Register</a></p>
+
+</div>
+
+<script>
+
+function login(){
+
+fetch("http://localhost:8081/auth/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+email:document.getElementById("email").value,
+password:document.getElementById("password").value
+
+})
+
+})
+
+.then(response => response.json())
+
+.then(user => {
+
+if(user && user.id){
+
+// store logged in user id
+localStorage.setItem("userId", user.id);
+
+// redirect to exam page
+window.location.href = "exam.html";
+
+}else{
+
+alert("Invalid email or password");
+
+}
+
+})
+
+.catch(error => {
+
+console.error("Login Error:", error);
+
+alert("Server error. Try again.");
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

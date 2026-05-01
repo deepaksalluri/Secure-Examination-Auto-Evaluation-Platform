@@ -1,0 +1,26 @@
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Build files
+target/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Database (H2)
+*.db
+*.mv.db
+*.trace.db
+
+# Env files
+.env
+
+# Temp files
+*.tmp
+*.swp
